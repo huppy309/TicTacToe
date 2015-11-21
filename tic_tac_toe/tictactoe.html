@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+    <head>
+    
+        <style>button { height: 50px; width: 50px; font-size: 20pt }</style>
+        <script src="/socket.io/socket.io.js"></script>
+        <script type="text/javascript">
+            
+            var socket = io("127.0.0.1:8000");    
+
+            socket.on('to_client', function(data) 
+            {
+                if(data == 'Waiting for second player' || data == 'Make a move' 
+                    || data == 'It is X\'s turn' || data == 'It is O\'s turn' || data == 'That slot is filled')
+                    document.getElementById('gameLog').innerHTML = data;
+                else if(data == 'X has won the game!' || data == 'Y has won the game!' || data == 'The game is a draw!' 
+                    || data == 'The game has ended')
+                    document.getElementById('gameLog').innerHTML = data;
+                else if(data == 'Disconnected')
+                {
+                    for(i = 0 ; i < 9 ; i++)
+                        document.getElementById('m' + i).innerHTML = '';
+                    document.getElementById('gameLog').innerHTML = data;
+                }
+                else
+                {
+                    for (i = 0 ; i < 9 ; i++)
+                    {
+                        if(data[i] != '.')
+                            document.getElementById('m' + i).innerHTML = data[i];
+                    }
+                }
+            });
+
+            function move(tile) 
+            {
+                socket.emit('to_server', tile);
+            }
+        
+        </script>
+    
+    </head>
+    <body>
+        
+        <table>
+            <tr>
+                <td><button id='m0' onclick='move(0)'></button></td>
+                <td><button id='m1' onclick='move(1)'></button></td>
+                <td><button id='m2' onclick='move(2)'></button></td>
+            </tr>
+            <tr>
+                <td><button id='m3' onclick='move(3)'></button></td>
+                <td><button id='m4' onclick='move(4)'></button></td>
+                <td><button id='m5' onclick='move(5)'></button></td>
+            </tr>
+            <tr>
+                <td><button id='m6' onclick='move(6)'></button></td>
+                <td><button id='m7' onclick='move(7)'></button></td>
+                <td><button id='m8' onclick='move(8)'></button></td>
+            </tr>
+        </table>
+
+        <p id = 'gameLog'>
+
+        </p>
+
+    </body>
+</html>
